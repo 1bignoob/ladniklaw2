@@ -156,3 +156,46 @@ document.querySelectorAll('.detail-text').forEach(element => {
         });
     }
 });
+
+// Practice Card Flip Functionality for Mobile/Touch Devices
+document.addEventListener('DOMContentLoaded', () => {
+    const practiceCards = document.querySelectorAll('.practice-card');
+    
+    // Check if device is touch-enabled
+    const isTouchDevice = () => {
+        return (('ontouchstart' in window) ||
+                (navigator.maxTouchPoints > 0) ||
+                (navigator.msMaxTouchPoints > 0));
+    };
+    
+    // Add click/touch event for mobile devices
+    practiceCards.forEach(card => {
+        // For touch devices, disable hover and use click
+        if (isTouchDevice()) {
+            card.addEventListener('click', (e) => {
+                e.stopPropagation();
+                
+                // Remove flipped class from all other cards
+                practiceCards.forEach(otherCard => {
+                    if (otherCard !== card) {
+                        otherCard.classList.remove('flipped');
+                    }
+                });
+                
+                // Toggle current card
+                card.classList.toggle('flipped');
+            });
+        }
+    });
+    
+    // Close flipped cards when clicking outside
+    if (isTouchDevice()) {
+        document.addEventListener('click', (e) => {
+            if (!e.target.closest('.practice-card')) {
+                practiceCards.forEach(card => {
+                    card.classList.remove('flipped');
+                });
+            }
+        });
+    }
+});

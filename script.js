@@ -197,50 +197,59 @@ document.querySelectorAll('.detail-text').forEach(element => {
 
 // Practice Card Flip Functionality for Mobile/Touch Devices
 document.addEventListener('DOMContentLoaded', () => {
+    const practiceGrid = document.querySelector('.practice-grid');
     const practiceCards = document.querySelectorAll('.practice-card');
-    
-    // Check if device is touch-enabled
-    const isTouchDevice = () => {
-        return (('ontouchstart' in window) ||
-                (navigator.maxTouchPoints > 0) ||
-                (navigator.msMaxTouchPoints > 0));
-    };
-    
-    // Add click/touch event for mobile devices
-    practiceCards.forEach(card => {
-        const flipCard = (e) => {
-            e.preventDefault();
-            e.stopPropagation();
 
-            // Remove flipped class from all other cards
-            practiceCards.forEach(otherCard => {
-                if (otherCard !== card) {
-                    otherCard.classList.remove('flipped');
-                }
-            });
+    if (!practiceGrid || practiceCards.length === 0) return;
 
-            // Toggle current card
-            card.classList.toggle('flipped');
-        };
+    const isTouchDevice = window.matchMedia('(hover: none), (pointer: coarse)').matches ||
+        ('ontouchstart' in window) ||
+        (navigator.maxTouchPoints > 0);
 
-        // For touch devices, use touchend to avoid iOS click/hover quirks
-        if (isTouchDevice()) {
-            card.addEventListener('touchend', flipCard, { passive: false });
-        } else {
-            card.addEventListener('click', flipCard);
-        }
-    });
-    
-    // Close flipped cards when clicking outside
-    if (isTouchDevice()) {
-        document.addEventListener('click', (e) => {
-            if (!e.target.closest('.practice-card')) {
-                practiceCards.forEach(card => {
-                    card.classList.remove('flipped');
-                });
+    if (!isTouchDevice) return;
+
+    const closeOtherCards = (activeCard) => {
+        practiceCards.forEach((card) => {
+            if (card !== activeCard) {
+                card.classList.remove('flipped');
             }
         });
-    }
+    };
+
+    const toggleCard = (card) => {
+        closeOtherCards(card);
+        card.classList.toggle('flipped');
+    };
+
+    // Pointer events are more reliable than touchend on modern iOS Safari.
+    practiceGrid.addEventListener('pointerup', (e) => {
+        const card = e.target.closest('.practice-card');
+        if (!card) return;
+
+        const scrollableText = e.target.closest('.practice-description-detailed');
+        if (scrollableText && card.classList.contains('flipped')) return;
+
+        e.preventDefault();
+        toggleCard(card);
+    });
+
+    // Fallback for browsers that may not emit pointer events consistently.
+    practiceGrid.addEventListener('click', (e) => {
+        const card = e.target.closest('.practice-card');
+        if (!card) return;
+
+        const scrollableText = e.target.closest('.practice-description-detailed');
+        if (scrollableText && card.classList.contains('flipped')) return;
+
+        e.preventDefault();
+        toggleCard(card);
+    });
+
+    document.addEventListener('pointerup', (e) => {
+        if (!e.target.closest('.practice-card')) {
+            practiceCards.forEach((card) => card.classList.remove('flipped'));
+        }
+    });
 });
 
 // Show overflow indicator only on practice cards with clipped detailed text.

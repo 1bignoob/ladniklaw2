@@ -392,13 +392,15 @@ section {
     will-change: transform;
 }
 
-.practice-card:hover .practice-card-inner {
-    transition-delay: 0s;
-    transform: rotateY(180deg);
-}
+@media (hover: hover) and (pointer: fine) {
+    .practice-card:hover .practice-card-inner {
+        transition-delay: 0s;
+        transform: rotateY(180deg);
+    }
 
-.practice-card:hover {
-    transform: translateY(-4px);
+    .practice-card:hover {
+        transform: translateY(-4px);
+    }
 }
 
 .practice-card.flipped .practice-card-inner {
@@ -422,11 +424,16 @@ section {
     transition: box-shadow 0.45s cubic-bezier(0.22, 1, 0.36, 1);
 }
 
-.practice-card:hover .practice-card-front,
-.practice-card:hover .practice-card-back,
 .practice-card.flipped .practice-card-front,
 .practice-card.flipped .practice-card-back {
     box-shadow: 0 16px 34px rgba(0, 0, 0, 0.28);
+}
+
+@media (hover: hover) and (pointer: fine) {
+    .practice-card:hover .practice-card-front,
+    .practice-card:hover .practice-card-back {
+        box-shadow: 0 16px 34px rgba(0, 0, 0, 0.28);
+    }
 }
 
 .practice-card-front {

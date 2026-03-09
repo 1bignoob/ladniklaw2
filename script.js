@@ -208,21 +208,26 @@ document.addEventListener('DOMContentLoaded', () => {
     
     // Add click/touch event for mobile devices
     practiceCards.forEach(card => {
-        // For touch devices, disable hover and use click
-        if (isTouchDevice()) {
-            card.addEventListener('click', (e) => {
-                e.stopPropagation();
-                
-                // Remove flipped class from all other cards
-                practiceCards.forEach(otherCard => {
-                    if (otherCard !== card) {
-                        otherCard.classList.remove('flipped');
-                    }
-                });
-                
-                // Toggle current card
-                card.classList.toggle('flipped');
+        const flipCard = (e) => {
+            e.preventDefault();
+            e.stopPropagation();
+
+            // Remove flipped class from all other cards
+            practiceCards.forEach(otherCard => {
+                if (otherCard !== card) {
+                    otherCard.classList.remove('flipped');
+                }
             });
+
+            // Toggle current card
+            card.classList.toggle('flipped');
+        };
+
+        // For touch devices, use touchend to avoid iOS click/hover quirks
+        if (isTouchDevice()) {
+            card.addEventListener('touchend', flipCard, { passive: false });
+        } else {
+            card.addEventListener('click', flipCard);
         }
     });
     
